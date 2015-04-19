@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1">
+
+    <title>Otter memo pad</title>
+
+    <link rel="stylesheet" href="css/lib/codemirror.css" />
+    <link rel="stylesheet" href="css/main.css" />
+
+    <script src="js/lib/jquery.min.js" defer></script>
+    <script src="js/lib/knockout.js" defer></script>
+    <script src="js/lib/knockout.persist.js" defer></script>
+    <script src="js/lib/codemirror.js" defer></script>
+    <script src="js/lib/markdown/markdown.js" defer></script>
+    <script src="js/app.js" defer></script>
+
+  </head>
+
+  <body>
+    <h1>Otter memo pad</h1>
+    <textarea id="code" data-bind="codeMirror: code"></textarea>
+  </body>
+</html>
