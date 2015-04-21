@@ -16,7 +16,13 @@ ko.bindingHandlers['codeMirror'] = {
 
     ko.bindingHandlers['value'].init(element, valueAccessor, allBindings);
   },
-  update: ko.bindingHandlers['value'].update
+  update: function(element, valueAccessor, allBindings){
+    var value = valueAccessor();
+    if (value() != value.mainCode.getValue()) {
+      value.mainCode.setValue(value());
+    }
+    ko.bindingHandlers['value'].update(element, valueAccessor, allBindings)
+  }
 };
 
 
