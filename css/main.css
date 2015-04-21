@@ -27,6 +27,7 @@ div[role="main"] {
     background: #fff;
     height: calc(100% - 5rem);
     overflow: hidden;
+    font-size: 1.8rem;
 }
 
 div[role="main"] p {
