@@ -48,5 +48,5 @@ section[data-type="sidebar"] > header .icon.icon-add {
 }
 
 .CodeMirror {
-    height: calc(100% - 45px);
+    height: 100%;
 }

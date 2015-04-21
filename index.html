@@ -43,15 +43,12 @@
     <a href="#content"><span class="icon icon-menu">hide sidebar</span></a>
     <a href="#drawer"><span class="icon icon-menu">show sidebar</span></a>
     <menu type="toolbar">
-      <a href="#content" data-bind="click: addMemo"><span class="icon icon-add">add new memo</span></a>
+      <a href="#content" data-bind="click: showDeleteConfirm"><span data-icon="delete"></span></a>
     </menu>
     <h1>Otter memo pad</h1>
   </header>
   <div role="main" data-bind="with: chosenMemo">
     <textarea id="code" data-bind="codeMirror: text"></textarea>
-  </div>
-  <div role="toolbar">
-    <button data-bind="click: showDeleteConfirm" data-icon="delete">delete</button>
   </div>
 </section>
 
