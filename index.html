@@ -31,7 +31,7 @@
   </header>
   <nav>
     <ul data-bind="foreach: memos">
-      <li><a href="#content" data-bind="text: title"></a></li>
+      <li><a href="#content" data-bind="text: title,click: $root.chooseMemo"></a></li>
     </ul>
   </nav>
 </section>
