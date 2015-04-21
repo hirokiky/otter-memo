@@ -58,9 +58,11 @@ var OtterViewModel = function() {
 
   self.chooseMemo = function(memo) {
     self.chosenMemoIdx(self.memos.indexOf(memo));
+    return true
   };
   self.addMemo = function() {
     self.memos.unshift(new Memo());
+    return true
   };
 
   self.memos([new Memo()]);
