@@ -55,6 +55,7 @@ var OtterViewModel = function() {
   self.chosenMemo = ko.computed(function() {
     return self.memos()[self.chosenMemoIdx()]
   });
+  self.isShownDeleteConfirm = ko.observable(false);
 
   self.chooseMemo = function(memo) {
     self.chosenMemoIdx(self.memos.indexOf(memo));
@@ -63,6 +64,28 @@ var OtterViewModel = function() {
   self.addMemo = function() {
     self.memos.unshift(new Memo());
     return true
+  };
+  self.deleteMemo = function() {
+    self.memos.remove(self.chosenMemo());
+    var idx = self.chosenMemoIdx();
+    var last_idx = self.numMemos() - 1;
+
+    if (idx >= last_idx) {
+      self.chosenMemoIdx(last_idx);
+    }
+    if (self.numMemos() == 0) {
+      self.memos.removeAll();
+      self.memos([new Memo()]);
+      self.chosenMemoIdx(0);
+    }
+    self.isShownDeleteConfirm(false);
+  };
+
+  self.showDeleteConfirm = function() {
+    self.isShownDeleteConfirm(true);
+  };
+  self.hideDeleteConfirm = function() {
+    self.isShownDeleteConfirm(false);
   };
 
   self.memos([new Memo()]);

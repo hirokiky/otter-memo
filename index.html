@@ -9,6 +9,7 @@
   <link rel="stylesheet" type="text/css" href="shared/style/headers.css" />
   <link rel="stylesheet" type="text/css" href="shared/style/drawer.css" />
   <link rel="stylesheet" type="text/css" href="shared/style/toolbars.css" />
+  <link rel="stylesheet" type="text/css" href="shared/style/confirm.css" />
   <link rel="stylesheet" type="text/css" href="shared/gaia-icons/gaia-icons-embedded.css" />
 
   <link rel="stylesheet" type="text/css" href="css/lib/codemirror.css" />
@@ -50,8 +51,21 @@
     <textarea id="code" data-bind="codeMirror: text"></textarea>
   </div>
   <div role="toolbar">
-    <button data-icon="delete">delete</button>
+    <button data-bind="click: showDeleteConfirm" data-icon="delete">delete</button>
   </div>
 </section>
+
+<!-- Delete confirmation -->
+<form role="dialog" data-type="confirm" data-bind="visible: isShownDeleteConfirm">
+  <section>
+    <h1>Confirmation</h1><!-- this heading is optional -->
+    <p>Are you sure you want to delete this contact?</p>
+  </section>
+  <menu>
+    <button data-bind="click: hideDeleteConfirm">Cancel</button>
+    <button data-bind="click: deleteMemo" class="danger">Delete</button>
+  </menu>
+</form>
+
 </body>
 </html>
