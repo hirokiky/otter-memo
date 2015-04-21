@@ -27,21 +27,11 @@
     <menu type="toolbar">
       <a href="#content"><span class="icon icon-add">add</span></a>
     </menu>
-    <h1>Title <em>(9)</em></h1>
+    <h1>Memos <em data-bind="text: numMemos"></em></h1>
   </header>
   <nav>
-    <ul>
-      <li><a href="#content">label</a></li>
-      <li><a href="#content">label</a></li>
-      <li><a href="#content">label</a></li>
-      <li><a href="#content">label</a></li>
-    </ul>
-    <h2>Subtitle</h2>
-    <ul>
-      <li><a href="#content">label</a></li>
-      <li><a href="#content">label</a></li>
-      <li><a href="#content">label larger label than the </a></li>
-      <li><a href="#content">label</a></li>
+    <ul data-bind="foreach: memos">
+      <li><a href="#content" data-bind="text: title"></a></li>
     </ul>
   </nav>
 </section>
@@ -50,12 +40,12 @@
     <a href="#content"><span class="icon icon-menu">hide sidebar</span></a>
     <a href="#drawer"><span class="icon icon-menu">show sidebar</span></a>
     <menu type="toolbar">
-      <a href="#new"><span class="icon icon-add">add new memo</span></a>
+      <a href="#content"><span class="icon icon-add">add new memo</span></a>
     </menu>
     <h1>Otter memo pad</h1>
   </header>
-  <div role="main">
-    <textarea id="code" data-bind="codeMirror: code"></textarea>
+  <div role="main" data-bind="with: chosenMemo">
+    <textarea id="code" data-bind="codeMirror: text"></textarea>
   </div>
 </section>
 </body>
