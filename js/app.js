@@ -29,7 +29,7 @@ ko.bindingHandlers['codeMirror'] = {
 var Memo = function() {
   var self = this;
 
-  self.text = ko.observable("default");
+  self.text = ko.observable("");
   self.updatedAt = new Date();
   self.createdAt = new Date();
 
