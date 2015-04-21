@@ -25,7 +25,7 @@
 <section data-type="sidebar">
   <header>
     <menu type="toolbar">
-      <a href="#content"><span class="icon icon-add">add</span></a>
+      <a href="#content" data-bind="click: addMemo"><span class="icon icon-add">add</span></a>
     </menu>
     <h1>Memos <em data-bind="text: numMemos"></em></h1>
   </header>
@@ -40,7 +40,7 @@
     <a href="#content"><span class="icon icon-menu">hide sidebar</span></a>
     <a href="#drawer"><span class="icon icon-menu">show sidebar</span></a>
     <menu type="toolbar">
-      <a href="#content"><span class="icon icon-add">add new memo</span></a>
+      <a href="#content" data-bind="click: addMemo"><span class="icon icon-add">add new memo</span></a>
     </menu>
     <h1>Otter memo pad</h1>
   </header>
