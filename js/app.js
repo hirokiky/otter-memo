@@ -46,6 +46,7 @@ var Memo = function() {
 
 var OtterViewModel = function() {
   var self = this;
+  // TODO: Sort it by ordering updateAt.
   self.memos = ko.observableArray().extend({persist: 'otterMemos'});
   self.numMemos = ko.computed(function() {
     return self.memos().length
