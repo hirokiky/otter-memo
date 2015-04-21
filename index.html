@@ -8,6 +8,8 @@
 
   <link rel="stylesheet" type="text/css" href="shared/style/headers.css" />
   <link rel="stylesheet" type="text/css" href="shared/style/drawer.css" />
+  <link rel="stylesheet" type="text/css" href="shared/style/toolbars.css" />
+  <link rel="stylesheet" type="text/css" href="shared/gaia-icons/gaia-icons-embedded.css" />
 
   <link rel="stylesheet" type="text/css" href="css/lib/codemirror.css" />
   <link rel="stylesheet" type="text/css" href="css/main.css" />
@@ -46,6 +48,11 @@
   </header>
   <div role="main" data-bind="with: chosenMemo">
     <textarea id="code" data-bind="codeMirror: text"></textarea>
+  </div>
+  <div role="toolbar">
+    <button data-icon="arrow-back">back</button>
+    <button data-icon="delete">delete</button>
+    <button data-icon="arrow-forward">forward</button>
   </div>
 </section>
 </body>
