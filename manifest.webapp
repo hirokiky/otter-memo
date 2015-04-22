@@ -1,6 +1,6 @@
 {
-  "name": "otter",
-  "description": "An memo pad",
+  "name": "Otter Memo",
+  "description": "Simple and high functionality memo pad",
   "launch_path": "/index.html",
   "icons": {
     "16": "/icons/otter16x16.png",

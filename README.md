@@ -1,6 +1,6 @@
 # Otter
 
-Otter is a markdown memo pad for FirefoxOS.
+Otter is a simple and high functionality memo pad for FirefoxOS.
 
 ## Icon
 
