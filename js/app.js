@@ -108,7 +108,7 @@ var Memo = function() {
   self.title = ko.pureComputed(function() {
     // FIXME: Take title from CodeMirror.title
     var title = self.text().split('\n')[0];
-    if (!title) {
+    if (!title.trim()) {
       return '(no title)'
     }
     return title
