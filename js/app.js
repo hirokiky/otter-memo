@@ -138,6 +138,30 @@ ko.extenders['arrayLocalStorage'] = function(target, option) {
 };
 
 
+ko.extenders['indexLocalStorage'] = function(target, option) {
+  var key = option.key || '';
+  var targetObservableArray = option.targetObservableArray;
+
+  var initialValue = target();
+  // Load existing value from localStorage if set
+  if (key && localStorage.getItem(key) !== null) {
+    try {
+      var initialIdx = JSON.parse(localStorage.getItem(key));
+      initialValue = targetObservableArray()[initialIdx];
+    } catch (e) {
+    }
+  }
+  target.subscribe(function() {
+    var idx = targetObservableArray.indexOf(target());
+    localStorage.setItem(key, ko.toJSON(idx));
+  });
+
+  target(initialValue);
+
+  return target;
+};
+
+
 var Memo = function(data) {
   var self = this;
 
@@ -167,7 +191,9 @@ var OtterViewModel = function() {
   // Use observable directly instead of computed,
   // not to flush the memo pad when the memos automatically sorted.
   // Actually this can be implemented by ko.computed with self.memos and self.chosenMemoIdx.
-  self.chosenMemo = ko.observable();
+  self.chosenMemo = ko.observable(self.memos()[0]).
+    extend({indexLocalStorage: {targetObservableArray: self.memos,
+                                key: "otterMemo-chosenMemo"}});
   self.isShownDeleteConfirm = ko.observable(false);
 
   self.chooseMemo = function(memo) {
@@ -210,8 +236,6 @@ var OtterViewModel = function() {
   self.hideDeleteConfirm = function() {
     self.isShownDeleteConfirm(false);
   };
-
-  self.chosenMemo(self.memos()[0])
 };
 
 window.addEventListener("load", function() {
