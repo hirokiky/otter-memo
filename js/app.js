@@ -26,14 +26,86 @@ ko.bindingHandlers['codeMirror'] = {
 };
 
 
+ko.extenders['timestamp'] = function(target, option) {
+  target.created = ko.observable(new Date());
+  target.updated = ko.observable(new Date());
+
+  target.subscribe(function() {
+    target.updated(new Date());
+  });
+  return target
+};
+
+
+ko.extenders['sortedBy'] = function(target, option) {
+  var observableGetter, postSorted, order;
+
+  if (option.observableGetter) {
+    observableGetter = option.observableGetter;
+  } else {
+    observableGetter = function(value) { return value };
+  }
+  if (option.postSorted) {
+    postSorted = option.postSorted;
+  } else {
+    postSorted = function() {};
+  }
+  if (option.order) {
+    order = option.order;
+  } else {
+    order = 'asc'
+  }
+
+  target._isSorting = false;  // Not to call recursive.
+
+  // Subscribe added elements to apply subscriber for sorting.
+  target.subscribe(function(changes) {
+    changes.forEach(function(change) {
+      if (change.status === 'added') {
+        // Subscriber for sorting.
+        observableGetter(change.value).subscribe(function() {
+          if (!target._isSorting) {  // Not to call recursive.
+
+            // Get the current array value and try to sort.
+            var originalArray = target();
+            var sorted = originalArray.concat().sort(function(left, right) {
+              if (observableGetter(left)() == observableGetter(right)){
+                return 0
+              }
+              if (order === 'asc') {
+                return observableGetter(left)() < observableGetter(right)() ? -1 : 1
+              } else {
+                return observableGetter(left)() > observableGetter(right)() ? -1 : 1
+              }
+            });
+
+            // If the sorted value is as same as original, won't change the observable.
+            var shouldBeSorted = false;
+            sorted.forEach(function(sortedElement, idx) {
+              if (sortedElement !== originalArray[idx]) {
+                shouldBeSorted = true;
+              }
+            });
+            if (shouldBeSorted) {
+              target._isSorting = true;
+              target(sorted);
+              postSorted();
+              target._isSorting = false;
+            }
+          }
+        })
+      }
+    });
+  }, null, 'arrayChange');
+  return target
+};
+
+
 var Memo = function() {
   var self = this;
 
-  self.text = ko.observable("");
-  self.updatedAt = new Date();
-  self.createdAt = new Date();
-
-  self.title = ko.computed(function() {
+  self.text = ko.observable("").extend({timestamp: ""});
+  self.title = ko.pureComputed(function() {
     // FIXME: Take title from CodeMirror.title
     var title = self.text().split('\n')[0];
     if (!title) {
@@ -46,13 +118,16 @@ var Memo = function() {
 
 var OtterViewModel = function() {
   var self = this;
-  // TODO: Sort it by ordering updateAt.
-  self.memos = ko.observableArray().extend({persist: 'otterMemos'});
+  self.memos = ko.observableArray().
+    extend({persist: 'otterMemos'}).
+    extend({sortedBy: {observableGetter: function(memo) {return memo.text.updated},
+                       postSorted: function() {self.chosenMemoIdx(0)},
+                       order: 'desc'}});
   self.numMemos = ko.computed(function() {
     return self.memos().length
   });
   self.chosenMemoIdx = ko.observable();
-  self.chosenMemo = ko.computed(function() {
+  self.chosenMemo = ko.pureComputed(function() {
     return self.memos()[self.chosenMemoIdx()]
   });
   self.isShownDeleteConfirm = ko.observable(false);
