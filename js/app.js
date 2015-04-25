@@ -106,7 +106,7 @@ ko.extenders['arrayLocalStorage'] = function(target, option) {
   var innerClass = option.innerClass || undefined;
   var observableGetter = option.observableGetter || function(e) {return e};
 
-  function applyValue(jsonValue) {
+  function parseJsonWithClass(jsonValue) {
     var parsed = JSON.parse(jsonValue);
     return parsed.map(function(data) {
       if (innerClass) {
@@ -116,19 +116,21 @@ ko.extenders['arrayLocalStorage'] = function(target, option) {
       }
     });
   }
+  function saveArray() {
+    localStorage.setItem(key, ko.toJSON(target()));
+  }
   var initialValue = target();
 
   // Load existing value from localStorage if set
   if (key && localStorage.getItem(key) !== null) {
     try {
-      initialValue = applyValue(localStorage.getItem(key));
+      initialValue = parseJsonWithClass(localStorage.getItem(key));
     } catch (e) {
     }
   }
   // Subscribe to new values and add them to localStorage
-  subscribeInnerChanges(target, observableGetter, function () {
-    localStorage.setItem(key, ko.toJSON(target()));
-  });
+  target.subscribe(saveArray);
+  subscribeInnerChanges(target, observableGetter, saveArray);
 
   target(initialValue);
 
