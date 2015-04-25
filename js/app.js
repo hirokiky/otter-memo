@@ -141,6 +141,10 @@ ko.extenders['arrayLocalStorage'] = function(target, option) {
 ko.extenders['indexLocalStorage'] = function(target, option) {
   var key = option.key || '';
   var targetObservableArray = option.targetObservableArray;
+  function setIndex() {
+    var idx = targetObservableArray.indexOf(target());
+    localStorage.setItem(key, ko.toJSON(idx));
+  }
 
   var initialValue = target();
   // Load existing value from localStorage if set
@@ -151,10 +155,8 @@ ko.extenders['indexLocalStorage'] = function(target, option) {
     } catch (e) {
     }
   }
-  target.subscribe(function() {
-    var idx = targetObservableArray.indexOf(target());
-    localStorage.setItem(key, ko.toJSON(idx));
-  });
+  target.subscribe(setIndex);
+  targetObservableArray.subscribe(setIndex);
 
   target(initialValue);
 
