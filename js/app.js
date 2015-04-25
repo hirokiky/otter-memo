@@ -38,17 +38,12 @@ ko.extenders['timestamp'] = function(target, option) {
 
 
 ko.extenders['sortedBy'] = function(target, option) {
-  var observableGetter, postSorted, order;
+  var observableGetter, order;
 
   if (option.observableGetter) {
     observableGetter = option.observableGetter;
   } else {
     observableGetter = function(value) { return value };
-  }
-  if (option.postSorted) {
-    postSorted = option.postSorted;
-  } else {
-    postSorted = function() {};
   }
   if (option.order) {
     order = option.order;
@@ -89,7 +84,6 @@ ko.extenders['sortedBy'] = function(target, option) {
             if (shouldBeSorted) {
               target._isSorting = true;
               target(sorted);
-              postSorted();
               target._isSorting = false;
             }
           }
