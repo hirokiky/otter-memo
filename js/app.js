@@ -121,37 +121,46 @@ var OtterViewModel = function() {
   self.memos = ko.observableArray().
     extend({persist: 'otterMemos'}).
     extend({sortedBy: {observableGetter: function(memo) {return memo.text.updated},
-                       postSorted: function() {self.chosenMemoIdx(0)},
                        order: 'desc'}});
   self.numMemos = ko.computed(function() {
     return self.memos().length
   });
-  self.chosenMemoIdx = ko.observable();
-  self.chosenMemo = ko.pureComputed(function() {
-    return self.memos()[self.chosenMemoIdx()]
-  });
+  // Use observable directly instead of computed,
+  // not to flush the memo pad when the memos automatically sorted.
+  // Actually this can be implemented by ko.computed with self.memos and self.chosenMemoIdx.
+  self.chosenMemo = ko.observable();
   self.isShownDeleteConfirm = ko.observable(false);
 
   self.chooseMemo = function(memo) {
-    self.chosenMemoIdx(self.memos.indexOf(memo));
+    self.chosenMemo(memo);
     return true
   };
   self.addMemo = function() {
-    self.memos.unshift(new Memo());
+    var memo = new Memo();
+    self.memos.unshift(memo);
+    self.chosenMemo(memo);
     return true
   };
   self.deleteMemo = function() {
-    self.memos.remove(self.chosenMemo());
-    var idx = self.chosenMemoIdx();
-    var last_idx = self.numMemos() - 1;
+    //     +-- idx
+    //     |
+    // [a, b, c, d]
+    //        |
+    //        +-----last_idx
+    var idx = self.memos.indexOf(self.chosenMemo());
+    var last_idx = self.numMemos() - 2;
 
-    if (idx >= last_idx) {
-      self.chosenMemoIdx(last_idx);
+    self.memos.remove(self.chosenMemo());
+
+    if (idx > last_idx) {
+      self.chosenMemo(self.memos()[last_idx]);
+    } else {
+      self.chosenMemo(self.memos()[idx])
     }
     if (self.numMemos() == 0) {
       self.memos.removeAll();
       self.memos([new Memo()]);
-      self.chosenMemoIdx(0);
+      self.chosenMemo(self.memos()[0]);
     }
     self.isShownDeleteConfirm(false);
   };
@@ -164,7 +173,7 @@ var OtterViewModel = function() {
   };
 
   self.memos([new Memo()]);
-  self.chosenMemoIdx(0);
+  self.chosenMemo(self.memos()[0])
 };
 
 window.addEventListener("load", function() {
