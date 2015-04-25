@@ -183,7 +183,7 @@ var OtterViewModel = function() {
     extend({sortedBy: {observableGetter: function(memo) {return memo.text.updated},
                        order: 'desc'},
             arrayLocalStorage: {observableGetter: function(memo) {return memo.text},
-                                key: "otterMemo-Array",
+                                key: "otterMemo-memos",
                                 innerClass: Memo}});
   self.numMemos = ko.pureComputed(function() {
     return self.memos().length
