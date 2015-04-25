@@ -1,3 +1,16 @@
+function subscribeInnerChanges(target, observableGetter, innerSubscriber) {
+  target.subscribe(function(changes) {
+    changes.forEach(function(change) {
+      if (change.status === 'added') {
+        // Subscriber for sorting.
+        observableGetter(change.value).subscribe(function(newValue) {
+          innerSubscriber(newValue);
+        })
+      }
+    });
+  }, null, 'arrayChange');
+}
+
 ko.bindingHandlers['codeMirror'] = {
   init: function(element, valueAccessor, allBindings) {
     var value = valueAccessor();
@@ -54,43 +67,36 @@ ko.extenders['sortedBy'] = function(target, option) {
   target._isSorting = false;  // Not to call recursive.
 
   // Subscribe added elements to apply subscriber for sorting.
-  target.subscribe(function(changes) {
-    changes.forEach(function(change) {
-      if (change.status === 'added') {
-        // Subscriber for sorting.
-        observableGetter(change.value).subscribe(function() {
-          if (!target._isSorting) {  // Not to call recursive.
+  subscribeInnerChanges(target, observableGetter, function() {
+    if (!target._isSorting) {  // Not to call recursive.
 
-            // Get the current array value and try to sort.
-            var originalArray = target();
-            var sorted = originalArray.concat().sort(function(left, right) {
-              if (observableGetter(left)() == observableGetter(right)){
-                return 0
-              }
-              if (order === 'asc') {
-                return observableGetter(left)() < observableGetter(right)() ? -1 : 1
-              } else {
-                return observableGetter(left)() > observableGetter(right)() ? -1 : 1
-              }
-            });
+      // Get the current array value and try to sort.
+      var originalArray = target();
+      var sorted = originalArray.concat().sort(function(left, right) {
+        if (observableGetter(left)() == observableGetter(right)){
+          return 0
+        }
+        if (order === 'asc') {
+          return observableGetter(left)() < observableGetter(right)() ? -1 : 1
+        } else {
+          return observableGetter(left)() > observableGetter(right)() ? -1 : 1
+        }
+      });
 
-            // If the sorted value is as same as original, won't change the observable.
-            var shouldBeSorted = false;
-            sorted.forEach(function(sortedElement, idx) {
-              if (sortedElement !== originalArray[idx]) {
-                shouldBeSorted = true;
-              }
-            });
-            if (shouldBeSorted) {
-              target._isSorting = true;
-              target(sorted);
-              target._isSorting = false;
-            }
-          }
-        })
+      // If the sorted value is as same as original, won't change the observable.
+      var shouldBeSorted = false;
+      sorted.forEach(function(sortedElement, idx) {
+        if (sortedElement !== originalArray[idx]) {
+          shouldBeSorted = true;
+        }
+      });
+      if (shouldBeSorted) {
+        target._isSorting = true;
+        target(sorted);
+        target._isSorting = false;
       }
-    });
-  }, null, 'arrayChange');
+    }
+  });
   return target
 };
 
