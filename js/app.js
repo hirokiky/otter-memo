@@ -95,10 +95,44 @@ ko.extenders['sortedBy'] = function(target, option) {
 };
 
 
-var Memo = function() {
+ko.extenders['arrayLocalStorage'] = function(target, option) {
+  var key = option.key || '';
+  var innerClass = option.innerClass || undefined;
+
+  function applyValue(jsonValue) {
+    var parsed = JSON.parse(jsonValue);
+    return parsed.map(function(data) {
+      if (innerClass) {
+        return new innerClass(data)
+      } else {
+        return data
+      }
+    });
+  }
+  var initialValue = target();
+
+  // Load existing value from localStorage if set
+  if (key && localStorage.getItem(key) !== null) {
+    try {
+      initialValue = applyValue(localStorage.getItem(key));
+    } catch (e) {
+    }
+  }
+  target(initialValue);
+
+  // Subscribe to new values and add them to localStorage
+  target.subscribe(function (newValue) {
+    localStorage.setItem(key, ko.toJSON(newValue));
+  });
+  return target;
+
+};
+
+
+var Memo = function(data) {
   var self = this;
 
-  self.text = ko.observable("").extend({timestamp: ""});
+  self.text = ko.observable(data.text || "").extend({timestamp: ""});
   self.title = ko.pureComputed(function() {
     // FIXME: Take title from CodeMirror.title
     var title = self.text().split('\n')[0];
@@ -112,10 +146,11 @@ var Memo = function() {
 
 var OtterViewModel = function() {
   var self = this;
-  self.memos = ko.observableArray().
-    extend({persist: 'otterMemos'}).
+  self.memos = ko.observableArray([new Memo({})]).
     extend({sortedBy: {observableGetter: function(memo) {return memo.text.updated},
-                       order: 'desc'}});
+                       order: 'desc'},
+            arrayLocalStorage: {key: "otterMemo-Array",
+                                innerClass: Memo}});
   self.numMemos = ko.pureComputed(function() {
     return self.memos().length
   });
@@ -130,7 +165,7 @@ var OtterViewModel = function() {
     return true
   };
   self.addMemo = function() {
-    var memo = new Memo();
+    var memo = new Memo({});
     self.memos.unshift(memo);
     self.chosenMemo(memo);
     return true
@@ -153,7 +188,7 @@ var OtterViewModel = function() {
     }
     if (self.numMemos() == 0) {
       self.memos.removeAll();
-      self.memos([new Memo()]);
+      self.memos([new Memo({})]);
       self.chosenMemo(self.memos()[0]);
     }
     self.isShownDeleteConfirm(false);
@@ -166,7 +201,6 @@ var OtterViewModel = function() {
     self.isShownDeleteConfirm(false);
   };
 
-  self.memos([new Memo()]);
   self.chosenMemo(self.memos()[0])
 };
 
