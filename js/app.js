@@ -104,6 +104,7 @@ ko.extenders['sortedBy'] = function(target, option) {
 ko.extenders['arrayLocalStorage'] = function(target, option) {
   var key = option.key || '';
   var innerClass = option.innerClass || undefined;
+  var observableGetter = option.observableGetter || function(e) {return e};
 
   function applyValue(jsonValue) {
     var parsed = JSON.parse(jsonValue);
@@ -124,14 +125,14 @@ ko.extenders['arrayLocalStorage'] = function(target, option) {
     } catch (e) {
     }
   }
+  // Subscribe to new values and add them to localStorage
+  subscribeInnerChanges(target, observableGetter, function () {
+    localStorage.setItem(key, ko.toJSON(target()));
+  });
+
   target(initialValue);
 
-  // Subscribe to new values and add them to localStorage
-  target.subscribe(function (newValue) {
-    localStorage.setItem(key, ko.toJSON(newValue));
-  });
   return target;
-
 };
 
 
@@ -155,7 +156,8 @@ var OtterViewModel = function() {
   self.memos = ko.observableArray([new Memo({})]).
     extend({sortedBy: {observableGetter: function(memo) {return memo.text.updated},
                        order: 'desc'},
-            arrayLocalStorage: {key: "otterMemo-Array",
+            arrayLocalStorage: {observableGetter: function(memo) {return memo.text},
+                                key: "otterMemo-Array",
                                 innerClass: Memo}});
   self.numMemos = ko.pureComputed(function() {
     return self.memos().length
