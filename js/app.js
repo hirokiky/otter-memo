@@ -122,7 +122,7 @@ var OtterViewModel = function() {
     extend({persist: 'otterMemos'}).
     extend({sortedBy: {observableGetter: function(memo) {return memo.text.updated},
                        order: 'desc'}});
-  self.numMemos = ko.computed(function() {
+  self.numMemos = ko.pureComputed(function() {
     return self.memos().length
   });
   // Use observable directly instead of computed,
