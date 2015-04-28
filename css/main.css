@@ -43,10 +43,22 @@ section[data-type="sidebar"] > header .icon.icon-add {
 /* Toolbar */
 
 [role="toolbar"] {
-  position: absolute;
-  bottom: 0;
+    position: absolute;
+    bottom: 0;
 }
 
+[role="toolbar"] a {
+    color: #333;
+    line-height: 44px;
+    font-size: 1.8rem;
+}
+
+[role="toolbar"] a:active {
+    color: #919191;
+    background-color: #b2f2ff;
+}
+
+
 .CodeMirror {
-    height: 100%;
+    height: calc(100% - 44px);
 }
