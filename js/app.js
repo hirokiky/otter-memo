@@ -14,6 +14,7 @@ function subscribeInnerChanges(target, observableGetter, innerSubscriber) {
 ko.bindingHandlers['codeMirror'] = {
   init: function(element, valueAccessor, allBindings) {
     var value = valueAccessor();
+    var doc = value.doc;
     var mainCode = CodeMirror.fromTextArea(
       element,
       {
@@ -21,21 +22,14 @@ ko.bindingHandlers['codeMirror'] = {
         lineNumbers: true
       }
     );
-    mainCode.on('change', function (cm) {
-      value(cm.getValue());
-    });
-
-    value.mainCode = mainCode;
-
+    if (doc.getEditor()) {
+      doc = doc.linkedDoc({sharedHist: true});
+    }
+    mainCode.swapDoc(doc);
+    mainCode.focus();
     ko.bindingHandlers['value'].init(element, valueAccessor, allBindings);
   },
-  update: function(element, valueAccessor, allBindings){
-    var value = valueAccessor();
-    if (value() != value.mainCode.getValue()) {
-      value.mainCode.setValue(value());
-    }
-    ko.bindingHandlers['value'].update(element, valueAccessor, allBindings)
-  }
+  update: ko.bindingHandlers['value'].update
 };
 
 
@@ -164,10 +158,30 @@ ko.extenders['indexLocalStorage'] = function(target, option) {
 };
 
 
+ko.extenders['asCodeMirrorDoc'] = function(target, option) {
+  target.doc = new CodeMirror.Doc("", "markdown", 0);
+
+  target.doc.on('change', function() {
+    if (target() != target.doc.getValue()) {
+      target(target.doc.getValue())
+    }
+  });
+  target.subscribe(function() {
+    if (target() != target.doc.getValue()) {
+      target.doc.setValue(target());
+    }
+  });
+
+  // Initial
+  target.doc.setValue(target());
+};
+
+
 var Memo = function(data) {
   var self = this;
 
-  self.text = ko.observable(data.text || "").extend({timestamp: ""});
+  self.text = ko.observable(data.text || "").
+    extend({timestamp: "", asCodeMirrorDoc: ""});
   self.title = ko.pureComputed(function() {
     // FIXME: Take title from CodeMirror.title
     var title = self.text().split('\n')[0];
@@ -183,10 +197,10 @@ var OtterViewModel = function() {
   var self = this;
   self.memos = ko.observableArray([new Memo({})]).
     extend({sortedBy: {observableGetter: function(memo) {return memo.text.updated},
-                       order: 'desc'},
-            arrayLocalStorage: {observableGetter: function(memo) {return memo.text},
-                                key: "otterMemo-memos",
-                                innerClass: Memo}});
+      order: 'desc'},
+      arrayLocalStorage: {observableGetter: function(memo) {return memo.text},
+        key: "otterMemo-memos",
+        innerClass: Memo}});
   self.numMemos = ko.pureComputed(function() {
     return self.memos().length
   });
@@ -195,7 +209,7 @@ var OtterViewModel = function() {
   // Actually this can be implemented by ko.computed with self.memos and self.chosenMemoIdx.
   self.chosenMemo = ko.observable(self.memos()[0]).
     extend({indexLocalStorage: {targetObservableArray: self.memos,
-                                key: "otterMemo-chosenMemo"}});
+      key: "otterMemo-chosenMemo"}});
   self.isShownDeleteConfirm = ko.observable(false);
 
   self.chooseMemo = function(memo) {
@@ -237,6 +251,15 @@ var OtterViewModel = function() {
   };
   self.hideDeleteConfirm = function() {
     self.isShownDeleteConfirm(false);
+  };
+
+  self.undo = function() {
+    self.chosenMemo().text.doc.undo();
+    return true;
+  };
+  self.redo = function() {
+    self.chosenMemo().text.doc.redo();
+    return true;
   };
 };
 
