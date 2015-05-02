@@ -210,7 +210,11 @@ var OtterViewModel = function() {
   self.chosenMemo = ko.observable(self.memos()[0]).
     extend({indexLocalStorage: {targetObservableArray: self.memos,
       key: "otterMemo-chosenMemo"}});
+  self.chosenDoc = ko.computed(function() {
+    return self.chosenMemo().text.doc
+  });
   self.isShownDeleteConfirm = ko.observable(false);
+  self.clipboard = ko.observable('');
 
   self.chooseMemo = function(memo) {
     self.chosenMemo(memo);
@@ -260,6 +264,26 @@ var OtterViewModel = function() {
   self.redo = function() {
     self.chosenMemo().text.doc.redo();
     return true;
+  };
+
+  self.lineCut = function() {
+    var doc = self.chosenDoc();
+    var cursor = doc.getCursor();
+    var from = CodeMirror.Pos(cursor.line, 0);
+    var to = CodeMirror.Pos(cursor.line+1, 0);
+    self.clipboard(doc.getRange(from, to));
+    doc.replaceRange('', from, to);
+    doc.getEditor().focus();
+    doc.setCursor(from, to);
+  };
+  self.paste = function() {
+    var doc = self.chosenDoc();
+    var cursor = doc.getCursor();
+    var line = cursor.line;
+    var ch = 0;
+    doc.replaceRange(self.clipboard(), CodeMirror.Pos(line, ch));
+    doc.getEditor().focus();
+    doc.setCursor(line+1, ch);
   };
 };
 
