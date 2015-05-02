@@ -183,7 +183,6 @@ var Memo = function(data) {
   self.text = ko.observable(data.text || "").
     extend({timestamp: "", asCodeMirrorDoc: ""});
   self.title = ko.pureComputed(function() {
-    // FIXME: Take title from CodeMirror.title
     var title = self.text().split('\n')[0];
     if (!title.trim()) {
       return '(no title)'
