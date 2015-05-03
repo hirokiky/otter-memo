@@ -212,7 +212,6 @@ var OtterViewModel = function() {
   self.chosenDoc = ko.computed(function() {
     return self.chosenMemo().text.doc
   });
-  self.isShownDeleteConfirm = ko.observable(false);
   self.clipboard = ko.observable('');
 
   /* Design */
@@ -257,14 +256,6 @@ var OtterViewModel = function() {
       self.memos([new Memo({})]);
       self.chosenMemo(self.memos()[0]);
     }
-    self.isShownDeleteConfirm(false);
-  };
-
-  self.showDeleteConfirm = function() {
-    self.isShownDeleteConfirm(true);
-  };
-  self.hideDeleteConfirm = function() {
-    self.isShownDeleteConfirm(false);
   };
 
   self.undo = function() {
