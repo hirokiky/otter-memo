@@ -215,6 +215,17 @@ var OtterViewModel = function() {
   self.isShownDeleteConfirm = ko.observable(false);
   self.clipboard = ko.observable('');
 
+  /* Design */
+  self.fontSize = ko.observable(1.5);
+  self.lineHeightRatio = ko.observable(1.5);
+  self.lineHeight = ko.pureComputed(function() {
+    return self.fontSize() * self.lineHeightRatio()
+  });
+  self.font = function() {
+    var s = self.fontSize();
+    self.fontSize(s+0.1);
+  };
+
   self.chooseMemo = function(memo) {
     self.chosenMemo(memo);
     return true

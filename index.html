@@ -27,6 +27,7 @@
 <body role="application">
 <section data-type="sidebar">
   <header>
+    <a href="#settings"><i class="fa fa-cog"></i></a>
     <menu type="toolbar">
       <a href="#content" data-bind="click: addMemo"><span class="icon icon-add">add</span></a>
     </menu>
@@ -47,7 +48,7 @@
     </menu>
     <h1>Otter memo</h1>
   </header>
-  <div role="main" data-bind="with: chosenMemo">
+  <div role="main" data-bind="with: chosenMemo, style: {fontSize: fontSize() + 'rem', lineHeight: fontSize() * 1.5 + 'rem'}">
     <textarea id="code" data-bind="codeMirror: text"></textarea>
   </div>
   <div role="toolbar">
