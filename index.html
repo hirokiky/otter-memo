@@ -10,11 +10,13 @@
   <link rel="stylesheet" type="text/css" href="shared/style/drawer.css" />
   <link rel="stylesheet" type="text/css" href="shared/style/confirm.css" />
   <link rel="stylesheet" type="text/css" href="shared/style/toolbars.css" />
+  <link rel="stylesheet" type="text/css" href="shared/style/seekbars.css" />
 
   <link rel="stylesheet" type="text/css" href="css/lib/codemirror.css" />
   <link rel="stylesheet" type="text/css" href="css/lib/font-awesome.css" />
 
   <link rel="stylesheet" type="text/css" href="css/main.css" />
+  <link rel="stylesheet" type="text/css" href="css/font.css" />
 
   <script src="js/lib/jquery.min.js" defer></script>
   <script src="js/lib/knockout.js" defer></script>
@@ -27,7 +29,8 @@
 <body role="application">
 <section data-type="sidebar">
   <header>
-    <a href="#settings"><i class="fa fa-cog"></i></a>
+    <!-- To enable `settings` button, comment in bellow line -->
+    <!-- <a href="#settings"><i class="fa fa-cog"></i></a> -->
     <menu type="toolbar">
       <a href="#content" data-bind="click: addMemo"><span class="icon icon-add">add</span></a>
     </menu>
@@ -44,11 +47,12 @@
     <a href="#content"><span class="icon icon-menu">hide sidebar</span></a>
     <a href="#drawer"><span class="icon icon-menu">show sidebar</span></a>
     <menu type="toolbar">
+      <a href="#font"><i class="fa fa-font"></i></a>
       <a href="#confirm"><span class="icon icon-close"></span></a>
     </menu>
     <h1>Otter memo</h1>
   </header>
-  <div role="main" data-bind="with: chosenMemo, style: {fontSize: fontSize() + 'rem', lineHeight: fontSize() * 1.5 + 'rem'}">
+  <div role="main" data-bind="with: chosenMemo, style: {fontSize: fontSize() + 'rem', lineHeight: lineHeight() + 'rem'}">
     <textarea id="code" data-bind="codeMirror: text"></textarea>
   </div>
   <div role="toolbar">
@@ -57,6 +61,18 @@
     <a href="#" data-bind="click: lineCut"><i class="fa fa-scissors"></i></a>
     <a href="#" data-bind="click: paste"><i class="fa fa-clipboard"></i></a>
   </div>
+
+  <div data-type="header-balloon" id="font">
+    <div data-type="balloon-inner">
+      <h2>Font size</h2>
+      <input type="range" max="2.2" min="1" step="0.1" data-bind="value: fontSize"/>
+      <h2>Line height</h2>
+      <input type="range" max="2" min="1" step="0.1" data-bind="value: lineHeightRatio"/>
+    </div>
+    <div data-type="balloon-background" onclick="location = '#content'"></div>
+  </div>
+
+
 </section>
 
 <!-- Delete confirmation -->

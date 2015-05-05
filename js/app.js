@@ -217,13 +217,15 @@ var OtterViewModel = function() {
   /* Design */
   self.fontSize = ko.observable(1.5);
   self.lineHeightRatio = ko.observable(1.5);
-  self.lineHeight = ko.pureComputed(function() {
+  self.lineHeight = ko.computed(function() {
     return self.fontSize() * self.lineHeightRatio()
   });
-  self.font = function() {
-    var s = self.fontSize();
-    self.fontSize(s+0.1);
+  self.refreshCodeMirror = function() {
+    self.chosenDoc().getEditor().refresh();
   };
+  // CodeMirror object required refreshing after font-size, line-height... changed.
+  self.fontSize.subscribe(self.refreshCodeMirror);
+  self.lineHeightRatio.subscribe(self.refreshCodeMirror);
 
   self.chooseMemo = function(memo) {
     self.chosenMemo(memo);
