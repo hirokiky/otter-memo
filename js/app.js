@@ -18,7 +18,7 @@ ko.bindingHandlers['codeMirror'] = {
     var mainCode = CodeMirror.fromTextArea(
       element,
       {
-        mode: "markdown",
+        mode: "gfm",
         lineNumbers: true
       }
     );
@@ -159,7 +159,7 @@ ko.extenders['indexLocalStorage'] = function(target, option) {
 
 
 ko.extenders['asCodeMirrorDoc'] = function(target, option) {
-  target.doc = new CodeMirror.Doc("", "markdown", 0);
+  target.doc = new CodeMirror.Doc("", "gfm", 0);
 
   target.doc.on('change', function() {
     if (target() != target.doc.getValue()) {
